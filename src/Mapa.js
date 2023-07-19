@@ -10,26 +10,31 @@ const garrapataIcon = new Icon({
   iconSize: [30, 30], // Tamaño del icono [ancho, alto]
 });
 
-const Mapa = () => {
+const Mapa = ({ fechaInicio, fechaFin }) => {
   const [garrapatas, setGarrapatas] = useState([]);
-  const [mapInitialized, setMapInitialized] = useState(false);
 
   useEffect(() => {
-    // Llamada al servicio REST para obtener las garrapatas
-    axios.get('http://localhost:8080/api/garrapatas')
+   
+      let url = 'http://localhost:8080/api/garrapatas';
+      // Llamada al servicio REST para obtener las garrapatas con las fechas filtradas
+
+      if (fechaInicio && fechaFin) {
+        url += '/startDate/' + formatDate(fechaInicio) + '/endDate/' + formatDate(fechaFin);
+      }
+    axios
+      .get(url)
       .then(response => {
         setGarrapatas(response.data);
-        console.log(response.data);
-        setMapInitialized(true); // Marcar el mapa como inicializado cuando los datos estén disponibles
       })
       .catch(error => {
         console.error('Error al obtener las garrapatas:', error);
       });
-  }, []);
+  }, [fechaInicio, fechaFin]);
 
-  if (!mapInitialized || garrapatas.length === 0) {
-    return null; // No renderizar el mapa hasta que los datos estén disponibles y el mapa no se haya inicializado
-  }
+  const formatDate = (date) => {
+    if (!date) return '';
+    return date.toISOString().split('T')[0];
+  };
 
   return (
     <MapContainer center={[40.123456, -74.987654]} zoom={5} style={{ width: '100%', height: '600px' }}>
