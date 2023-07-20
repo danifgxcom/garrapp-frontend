@@ -11,3 +11,39 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.bg-earth {
+  background-color: #D2B48C; /* Color tierra (puedes ajustar este valor según tus preferencias) */
+}
+
+.nav-link {
+  color: #FFFFFF; /* Color de las letras */
+}
+
+.app-container {
+  padding-top: 60px; /* Espacio superior para evitar que el menú se superponga */
+}
+
+.main-content {
+  padding: 20px; /* Agrega espacio alrededor del contenido principal */
+}
+
+/* Ajusta el tamaño y la posición del menú */
+.menu-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background-color: #6c3c15; /* Cambia el color de fondo del menú */
+  padding: 10px;
+}
+
+/* Ajusta el estilo de los enlaces del menú */
+.menu-container a {
+  color: white;
+  text-decoration: none;
+  padding: 10px;
+}
+
+/* Agrega más estilos según tus necesidades */

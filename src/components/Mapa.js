@@ -38,7 +38,7 @@ const Mapa = ({ fechaInicio, fechaFin }) => {
   };
 
   return (
-    <MapContainer center={[40.123456, -74.987654]} zoom={5} style={{ width: '100%', height: '600px' }}>
+    <MapContainer center={[40.408170, -3.585831]} zoom={5} style={{ width: '100%', height: '600px' }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <MarkerClusterGroup>
         {garrapatas.map((garrapata) => (
