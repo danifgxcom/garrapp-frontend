@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import { Icon } from 'leaflet';
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
-
+import './custom-marker-cluster.css'; 
 
 const garrapataIcon = new Icon({
   iconUrl: 'garrapata_marker.png',
@@ -39,11 +40,19 @@ const Mapa = ({ fechaInicio, fechaFin }) => {
   return (
     <MapContainer center={[40.123456, -74.987654]} zoom={5} style={{ width: '100%', height: '600px' }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      {garrapatas.map(garrapata => (
-        <Marker key={garrapata.id} position={[garrapata.latitud, garrapata.longitud]}  icon={garrapataIcon}>
-          <Popup>{garrapata.fechaHora}</Popup>
-        </Marker>
-      ))}
+      <MarkerClusterGroup>
+        {garrapatas.map((garrapata) => (
+          <Marker
+            key={garrapata.id}
+            position={[garrapata.latitud, garrapata.longitud]}
+            icon={garrapataIcon}
+            data-count={garrapata.cantidad} // Aquí pasas la cantidad de garrapatas agrupadas como una cadena
+          >
+            <Popup>{garrapata.fechaHora}</Popup>
+          </Marker>
+        ))}
+      </MarkerClusterGroup>
+
     </MapContainer>
   );
 };

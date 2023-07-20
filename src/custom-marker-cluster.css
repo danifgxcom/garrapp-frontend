@@ -1,0 +1,28 @@
+/* Estilos para el marcador de agrupación personalizado */
+.leaflet-marker-icon.custom-cluster-icon {
+    width: 100px;
+    height: 100px;
+    background-color: red;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    position: relative; /* Agrega esta línea para posicionar correctamente el contenido */
+  }
+  
+  .leaflet-marker-icon.custom-cluster-icon::before {
+    content: attr(data-count); /* Mostrar el número en el contenido */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+  }
+  
