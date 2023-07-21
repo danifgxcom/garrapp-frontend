@@ -28,15 +28,17 @@ const ListaGarrapatas = () => {
   };
 
   // Función para filtrar los datos por el texto ingresado en el input
-  const handleFilter = (event) => {
-    setFilterText(event.target.value);
+const handleFilter = (event) => {
+    const searchText = event.target.value;
+    setFilterText(searchText);
   };
-
+  
   // Lógica para ordenar y filtrar los datos
   const sortedAndFilteredGarrapatas = garrapatas
-    .filter((garrapata) =>
-      garrapata.fechaHora.toLowerCase().includes(filterText.toLowerCase())
-    )
+    .filter((garrapata) => {
+      // Asegurarse de que garrapata.fechaHora no sea nulo antes de aplicar toLowerCase()
+      return garrapata.fechaHora && garrapata.fechaHora.toLowerCase().includes(filterText.toLowerCase());
+    })
     .sort((a, b) => {
       if (a[sortBy] < b[sortBy]) return -1;
       if (a[sortBy] > b[sortBy]) return 1;
