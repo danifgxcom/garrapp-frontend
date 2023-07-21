@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 
-const NuevoGarrapataForm = ({ handleFormSubmit, handleFormChange,handleCancel }) => {
+const NuevoGarrapataForm = ({ handleFormSubmit, handleCancel }) => {
   const [formData, setFormData] = useState({
     cantidad: 1,
     tipo: '',
@@ -8,17 +8,17 @@ const NuevoGarrapataForm = ({ handleFormSubmit, handleFormChange,handleCancel })
     fechaHora: new Date().toISOString().slice(0, 16),
   });
 
-  const handleChange = useCallback((e) => {
-    const { name, value } = e.target;
+  const handleFormChange = useCallback((name, value) => {
+    console.log('name: ', name, ' and value: ', value);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   }, []);
 
-  const handleSubmit = useCallback(() => {
-    handleFormSubmit(formData);
-  }, [handleFormSubmit, formData]);
+  const handleSubmit = () => {
+    handleFormSubmit(formData); // Pasar la información actualizada al componente Mapa al hacer clic en "Añadir"
+  };
 
   return (
     <div>
@@ -30,7 +30,7 @@ const NuevoGarrapataForm = ({ handleFormSubmit, handleFormChange,handleCancel })
           id="cantidad"
           name="cantidad"
           value={formData.cantidad}
-          onChange={handleChange}
+          onChange={(e) => handleFormChange(e.target.name, e.target.value)}
         />
         <br />
         <label htmlFor="tipo">Tipo:</label>
@@ -39,7 +39,7 @@ const NuevoGarrapataForm = ({ handleFormSubmit, handleFormChange,handleCancel })
           id="tipo"
           name="tipo"
           value={formData.tipo}
-          onChange={handleChange}
+          onChange={(e) => handleFormChange(e.target.name, e.target.value)}
         />
         <br />
         <label htmlFor="codigo">Código:</label>
@@ -48,7 +48,7 @@ const NuevoGarrapataForm = ({ handleFormSubmit, handleFormChange,handleCancel })
           id="codigo"
           name="codigo"
           value={formData.codigo}
-          onChange={handleChange}
+          onChange={(e) => handleFormChange(e.target.name, e.target.value)}
         />
         <br />
         {/* Campos de fecha y hora de solo lectura */}

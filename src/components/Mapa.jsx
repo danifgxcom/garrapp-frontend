@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Popup, useMap } from 'react-leaflet';
 import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import 'leaflet/dist/leaflet.css';
 import './custom-marker-cluster.css';
@@ -11,13 +11,13 @@ const Mapa = ({ fechaInicio, fechaFin }) => {
   const [garrapatas, setGarrapatas] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [formData, setFormData] = useState({
-    latitud: 0,
-    longitud: 0,
     cantidad: 0,
     tipo: '',
     codigo: '',
     fechaHora: '',
   });
+  const [tempLatitud, setTempLatitud] = useState(0);
+  const [tempLongitud, setTempLongitud] = useState(0);
 
   useEffect(() => {
     getGarrapatas(fechaInicio, fechaFin)
@@ -29,20 +29,24 @@ const Mapa = ({ fechaInicio, fechaFin }) => {
       });
   }, [fechaInicio, fechaFin]);
 
-  const handleFormSubmit = useCallback(() => {
-    console.log(formData);
-    createGarrapata(formData)
+  const handleFormSubmit = (formData) => {
+    console.log('form data: ', formData);
+    const newGarrapataData = {
+      ...formData,
+      latitud: tempLatitud,
+      longitud: tempLongitud,
+    };
+    createGarrapata(newGarrapataData)
       .then((response) => {
-        console.log(formData);
         const { latitud, longitud } = formData;
         const newGarrapata = {
           id: response.data.id,
           latitud,
           longitud,
-          cantidad: formData.cantidad,
-          tipo: formData.tipo,
-          codigo: formData.codigo,
-          fechaHora: formData.fechaHora,
+          cantidad: newGarrapataData.cantidad,
+          tipo: newGarrapataData.tipo,
+          codigo: newGarrapataData.codigo,
+          fechaHora: newGarrapataData.fechaHora,
         };
         setGarrapatas((prevGarrapatas) => [...prevGarrapatas, newGarrapata]);
         setShowPopup(false);
@@ -50,11 +54,14 @@ const Mapa = ({ fechaInicio, fechaFin }) => {
       .catch((error) => {
         console.error('Error al añadir la garrapata:', error);
       });
-  }, [formData]); // Agregar formData aquí como dependencia
+  };
+
   const mapRef = useRef(null);
 
   const handleMapRightClick = useCallback((e) => {
     const { lat, lng } = e.latlng;
+    setTempLatitud(lat);
+    setTempLongitud(lng);
     setFormData((prevData) => ({
       ...prevData,
       latitud: lat,
@@ -80,12 +87,6 @@ const Mapa = ({ fechaInicio, fechaFin }) => {
     return null;
   };
 
-  const handleFormChange = useCallback((name, value) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  }, []);
 
   return (
     <div>
@@ -106,7 +107,6 @@ const Mapa = ({ fechaInicio, fechaFin }) => {
         {showPopup && (
           <Popup position={[formData.latitud, formData.longitud]}>
             <NuevoGarrapataForm
-              handleFormChange={handleFormChange} // Asegúrate de pasar la función aquí
               handleFormSubmit={handleFormSubmit}
               handleCancel={() => setShowPopup(false)}
             />
