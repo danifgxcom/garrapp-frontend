@@ -1,15 +1,24 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 
-const NuevoGarrapataForm = React.memo(({ newGarrapataData, handleFormChange, handleFormSubmit, handleCancel }) => {
-    // Utilizamos useCallback para memorizar la función y evitar renderizados innecesarios
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        handleFormChange(name, value);
-      };
-  
+const NuevoGarrapataForm = ({ handleFormSubmit, handleFormChange,handleCancel }) => {
+  const [formData, setFormData] = useState({
+    cantidad: 1,
+    tipo: '',
+    codigo: '',
+    fechaHora: new Date().toISOString().slice(0, 16),
+  });
+
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  }, []);
+
   const handleSubmit = useCallback(() => {
-    handleFormSubmit();
-  }, [handleFormSubmit]);
+    handleFormSubmit(formData);
+  }, [handleFormSubmit, formData]);
 
   return (
     <div>
@@ -20,7 +29,7 @@ const NuevoGarrapataForm = React.memo(({ newGarrapataData, handleFormChange, han
           type="number"
           id="cantidad"
           name="cantidad"
-          value={newGarrapataData.cantidad}
+          value={formData.cantidad}
           onChange={handleChange}
         />
         <br />
@@ -29,7 +38,7 @@ const NuevoGarrapataForm = React.memo(({ newGarrapataData, handleFormChange, han
           type="text"
           id="tipo"
           name="tipo"
-          value={newGarrapataData.tipo}
+          value={formData.tipo}
           onChange={handleChange}
         />
         <br />
@@ -38,8 +47,18 @@ const NuevoGarrapataForm = React.memo(({ newGarrapataData, handleFormChange, han
           type="text"
           id="codigo"
           name="codigo"
-          value={newGarrapataData.codigo}
+          value={formData.codigo}
           onChange={handleChange}
+        />
+        <br />
+        {/* Campos de fecha y hora de solo lectura */}
+        <label htmlFor="fechaHora">Fecha y Hora:</label>
+        <input
+          type="text"
+          id="fechaHora"
+          name="fechaHora"
+          value={formData.fechaHora}
+          readOnly
         />
         <br />
         <button type="button" onClick={handleSubmit}>
@@ -51,6 +70,6 @@ const NuevoGarrapataForm = React.memo(({ newGarrapataData, handleFormChange, han
       </form>
     </div>
   );
-});
+};
 
 export default NuevoGarrapataForm;

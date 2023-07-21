@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { MapContainer, TileLayer, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import 'leaflet/dist/leaflet.css';
 import './custom-marker-cluster.css';
@@ -10,7 +10,7 @@ import { getGarrapatas, createGarrapata } from './api';
 const Mapa = ({ fechaInicio, fechaFin }) => {
   const [garrapatas, setGarrapatas] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
-  const [newGarrapataData, setNewGarrapataData] = useState({
+  const [formData, setFormData] = useState({
     latitud: 0,
     longitud: 0,
     cantidad: 0,
@@ -29,26 +29,20 @@ const Mapa = ({ fechaInicio, fechaFin }) => {
       });
   }, [fechaInicio, fechaFin]);
 
-  // Utilizamos useCallback para memorizar la función y evitar renderizados innecesarios
-  const handleFormChange = useCallback((name, value) => {
-    setNewGarrapataData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  }, []);
-
-  const handleFormSubmit = () => {
-    createGarrapata(newGarrapataData)
+  const handleFormSubmit = useCallback(() => {
+    console.log(formData);
+    createGarrapata(formData)
       .then((response) => {
-        const { latitud, longitud } = newGarrapataData;
+        console.log(formData);
+        const { latitud, longitud } = formData;
         const newGarrapata = {
           id: response.data.id,
           latitud,
           longitud,
-          cantidad: newGarrapataData.cantidad,
-          tipo: newGarrapataData.tipo,
-          codigo: newGarrapataData.codigo,
-          fechaHora: newGarrapataData.fechaHora,
+          cantidad: formData.cantidad,
+          tipo: formData.tipo,
+          codigo: formData.codigo,
+          fechaHora: formData.fechaHora,
         };
         setGarrapatas((prevGarrapatas) => [...prevGarrapatas, newGarrapata]);
         setShowPopup(false);
@@ -56,23 +50,23 @@ const Mapa = ({ fechaInicio, fechaFin }) => {
       .catch((error) => {
         console.error('Error al añadir la garrapata:', error);
       });
-  };
-
+  }, [formData]); // Agregar formData aquí como dependencia
   const mapRef = useRef(null);
 
-  // Función para manejar el clic derecho en el mapa
-  const handleMapRightClick = (e) => {
-    console.log(e);
+  const handleMapRightClick = useCallback((e) => {
     const { lat, lng } = e.latlng;
-    setNewGarrapataData({
-      ...newGarrapataData,
+    setFormData((prevData) => ({
+      ...prevData,
       latitud: lat,
       longitud: lng,
-    });
+      cantidad: 0,
+      tipo: '',
+      codigo: '',
+      fechaHora: new Date().toISOString().slice(0, 16),
+    }));
     setShowPopup(true);
-  };
+  }, []);
 
-  // Componente para manejar el evento de clic derecho en el mapa
   const MapRightClickHandler = () => {
     const map = useMap();
     useEffect(() => {
@@ -81,12 +75,17 @@ const Mapa = ({ fechaInicio, fechaFin }) => {
       return () => {
         map.removeEventListener('contextmenu', handleMapRightClick);
       };
-    }, [map]);
+    }, [map, handleMapRightClick]);
 
     return null;
   };
 
-  const MemoizedNuevoGarrapataForm = React.memo(NuevoGarrapataForm);
+  const handleFormChange = useCallback((name, value) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  }, []);
 
   return (
     <div>
@@ -105,10 +104,9 @@ const Mapa = ({ fechaInicio, fechaFin }) => {
         </MarkerClusterGroup>
 
         {showPopup && (
-          <Popup position={[newGarrapataData.latitud, newGarrapataData.longitud]}>
-            <MemoizedNuevoGarrapataForm
-              newGarrapataData={newGarrapataData}
-              handleFormChange={handleFormChange}
+          <Popup position={[formData.latitud, formData.longitud]}>
+            <NuevoGarrapataForm
+              handleFormChange={handleFormChange} // Asegúrate de pasar la función aquí
               handleFormSubmit={handleFormSubmit}
               handleCancel={() => setShowPopup(false)}
             />
