@@ -40,18 +40,27 @@ const Mapa = ({ fechaInicio, fechaFin }) => {
   return (
     <MapContainer center={[40.408170, -3.585831]} zoom={5} style={{ width: '100%', height: '600px' }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <MarkerClusterGroup>
-        {garrapatas.map((garrapata) => (
-          <Marker
-            key={garrapata.id}
-            position={[garrapata.latitud, garrapata.longitud]}
-            icon={garrapataIcon}
-            data-count={garrapata.cantidad} // Aquí pasas la cantidad de garrapatas agrupadas como una cadena
-          >
-            <Popup>{garrapata.fechaHora}</Popup>
-          </Marker>
-        ))}
-      </MarkerClusterGroup>
+        <MarkerClusterGroup>
+          {garrapatas.map((garrapata) => (
+            <Marker
+              key={garrapata.id}
+              position={[garrapata.latitud, garrapata.longitud]}
+              icon={garrapataIcon}
+              data-count={garrapata.cantidad}
+            >
+              <Popup>
+                <div className="popup-content">
+                  <h4>Garrapata ID: {garrapata.id}</h4>
+                  <p>Fecha y Hora: {garrapata.fechaHora}</p>
+                  <p>Cantidad: {garrapata.cantidad}</p>
+                  <p>Tipo: {garrapata.tipo}</p>
+                  <p>Código: {garrapata.codigo}</p>
+                  {/* Agrega aquí más campos que desees mostrar en el popup */}
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+        </MarkerClusterGroup>
 
     </MapContainer>
   );
