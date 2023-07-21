@@ -29,32 +29,32 @@ const Mapa = ({ fechaInicio, fechaFin }) => {
       });
   }, [fechaInicio, fechaFin]);
 
+  const fetchGarrapatas = () => {
+    getGarrapatas(fechaInicio, fechaFin)
+      .then((response) => {
+        setGarrapatas(response.data);
+      })
+      .catch((error) => {
+        console.error('Error al obtener las garrapatas:', error);
+      });
+  };
+
   const handleFormSubmit = (formData) => {
-    console.log('form data: ', formData);
     const newGarrapataData = {
       ...formData,
       latitud: tempLatitud,
       longitud: tempLongitud,
     };
     createGarrapata(newGarrapataData)
-      .then((response) => {
-        const { latitud, longitud } = formData;
-        const newGarrapata = {
-          id: response.data.id,
-          latitud,
-          longitud,
-          cantidad: newGarrapataData.cantidad,
-          tipo: newGarrapataData.tipo,
-          codigo: newGarrapataData.codigo,
-          fechaHora: newGarrapataData.fechaHora,
-        };
-        setGarrapatas((prevGarrapatas) => [...prevGarrapatas, newGarrapata]);
+      .then(() => {
+        fetchGarrapatas(); // Actualizar la lista de garrapatas después de crear una nueva
         setShowPopup(false);
       })
       .catch((error) => {
         console.error('Error al añadir la garrapata:', error);
       });
   };
+
 
   const mapRef = useRef(null);
 
